@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Company: °ÂÐÂÖÇÄÜ
-// Engineer: ¹¢»Û»Û
+// Company: å¥¥æ–°æ™ºèƒ½
+// Engineer: è€¿æ…§æ…§
 //
 // Description: A fast base-2 anti-logarithm function
 // The input and output have binary points: In: xxxxxx.yyyy_yy; Out: xxxx_xxxx_xxxx_xxxx.yyyy_yyyy.
@@ -11,49 +11,44 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-module AntiLog2 #(
+module math_pow2 #(
 
   // parameters
-  
+
   parameter DOUT_WIDTH = 8,
-  
+
   // bit width parameters
- 
+
   localparam DW = DOUT_WIDTH-1
- 
+
 ) (
 
-  input       [11:0]	    DIN,
-  input		                clk, 
-  output      [DW:0]   	  DOUT
-  
+  input       [11:0]       DIN,
+  input                    clk,
+  output      [DW:0]       DOUT
+
 );
 
-
   // Comprises 2 main blocks: barrel shifter & LUT
-  
-  reg         [ 5:0]	    barrelshfcnt;
-  (*dont_touch="true"*) reg         [22:0]	    LUTout;
-  (*dont_touch="true"*) reg         [71:0]      DOUT1;
-  wire        [86:0]      tmp1 = ({1'b1, LUTout}  <<  barrelshfcnt);
-  
-  
+
+  reg         [ 5:0]       barrelshfcnt;
+  (*dont_touch="true"*)reg         [22:0]       LUTout;
+  (*dont_touch="true"*)reg         [71:0]       DOUT1;
+  (*dont_touch="true"*)wire        [86:0]       tmp1 = ({1'b1, LUTout}  <<  barrelshfcnt);
+
   always @(posedge clk) begin
-  
     barrelshfcnt <= DIN[11:6];
     DOUT1 <= tmp1[86:15];
-    
   end
-  
+
   assign  DOUT = DOUT1[8+DW:8];
-  
+
   //LUT for one octave of antilog lookup
   // The equation is: output = (2^(input/64)-1) * 2^23
   // For larger tables, better to generate a separate data file using a program!
-  
+
   always @(posedge clk)
     case (DIN[5:0])
-  
       0 :  LUTout <= 0;
       1 :  LUTout <= 91346;
       2 :  LUTout <= 183687;
@@ -118,9 +113,8 @@ module AntiLog2 #(
       61:  LUTout <= 7852255;
       62:  LUTout <= 8029107;
       63:  LUTout <= 8207884;
-  
     endcase
-  
+
 endmodule
 
 ////////////////////////////////////////////////////////////////////////////////
